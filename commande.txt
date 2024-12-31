@@ -1,0 +1,277 @@
+    1  cd Bureau/
+    2  ls
+    3  cd Ansible_test/
+    4  cd ..
+    5  mkdir Ansible_role
+    6  ls
+    7  cd Ansible_role/
+    8  ls
+    9  ansible-galaxy init testRole
+   10  ls
+   11  cd testRole/
+   12  ls
+   13  cd handlers/
+   14  ls
+   15  cd ..
+   16  ls
+   17  cd vars/
+   18  ls
+   19  cd ..
+   20  ls
+   21  cd templates/
+   22  ls
+   23  cd ..
+   24  ls
+   25  cd tasks/
+   26  ls
+   27  vim main.yml 
+   28  cd ..
+   29  ls
+   30  cd ..
+   31  ls
+   32  ansible-playbook -i hosts playbooks.yaml
+   33  ansible-playbook -i hosts Playbooks.yaml
+   34  ansible-playbook -i hosts playbooks.yaml
+   35  ansible-playbook -i hosts Playbooks.yaml
+   36  ansible-playbook -i hosts playbooks.yaml
+   37  ansible-playbook -i hosts Playbooks.yaml
+   38  vagrant init
+   39  vim Vagrantfile 
+   40  cd
+   41  vagrant init
+   42  ssh-add
+   43  vagrant init
+   44  vagrant halt
+   45  history
+
+
+    1  sudo systemctl restart ssh
+    2  sudo systemctl status ssh
+    3  sudo systemctl restart ssh
+    4  sudo systemctl stop ssh
+    5  sudo systemctl start ssh
+    6  cd ..
+    7  ls
+    8  cd deploy/
+    9  ls
+   10  ansible-playbook -i hosts Playbooks_2.ya
+   11   
+   12  ls
+   13  ansible-galaxy init testDocker
+   14  ls
+   15  sudo systemctl status tomcat8
+   16  sudo docker ps -a
+   17  ansible-playbook -i hosts playbook_tomcat_docker.yaml 
+   18  sudo docker ps
+   19  sudo docker stop 1e7e83a86ba1
+   20  sudo docker ps
+   21  sudo docker-container prune
+   22  cd ..
+   23  ls
+   24  cd Ansible_vagrant/
+   25  ls
+   26  ansible-playbook -i hosts playbook_tomcat_docker.yaml 
+   27  ls
+   28  ansible-playbook -i hosts playbook_tomcat_docker.yaml 
+   29  ssh vagrant@localhost -p 2222
+   30  ansible-playbook -i hosts playbook_tomcat_docker. yaml
+   31  history
+
+
+    1  cd
+    2  vagrant
+    3  sudo apt install vagrant
+    4  vagrant --version
+    5  mkdir -p ~/Vagrant/VM1
+    6  cd ~/Vagrant/VM1/
+    7  ls
+    8  vagrant init ubuntu/xenial64
+    9  ll
+   10  cat Vagrantfile 
+   11  vagrant up
+   12  vagrant ssh
+   13  vagrant status
+   14  vagrant ip
+   15  ls
+   16  vim Vagrantfile 
+   17  vagrant ssh
+   18  ls
+   19  vim Vagrantfile 
+   20  vagrant up
+   21  vagrant provision
+   22  vagrant reload
+   23  vagrant ssh
+   24  vim Vagrantfile 
+   25  cd ..
+   26  ls
+   27  cd VM1/
+   28  ls
+   29  vagrant ssh
+   30  vim Vagrantfile 
+   31  vagrant up
+   32  vim Vagrantfile 
+   33  vagrant up
+   34  vim Vagrantfile 
+   35  vagrant up
+   36  vim Vagrantfile 
+   37  vagrant up
+   38  vim Vagrantfile 
+   39  pwd
+   40  vagrant up
+   41  vagrant ssh
+   42  vagrant up
+   43  vagrant ssh
+   44  host1 ssh
+   45  ls
+   46  vagrant reload
+   47  host1 ssh
+   48  host2 ssh
+   49  host1 up
+   50  host2 up
+   51  vagrant up
+   52  host1 ssh
+   53  vagrant halt
+   54  vagrant up
+   55  host3 ssh
+   56  vagrant ssh
+   57  vagrant provision
+   58  vagrant ssh
+   59  vagrant reload
+   60* vagrant 
+   61  vagrant up
+   62  vagrant ssh
+   63  vagrant destroy
+   64  cd ..
+   65  ls
+   66  rm -r Vagrant/
+   67  ls
+   68  mkdir Vagrant/VM1/
+   69  mkdir Vagrant/VM1
+   70  mkdir /Vagrant/VM1
+   71  mkdir ~/Vagrant/VM1
+   72  ls
+   73  sudo mkdir ~/Vagrant
+   74  ls
+   75  cd Vagrant/
+   76  ls
+   77  mkdir VM
+   78  sudo mkdir VM
+   79  ls
+   80  cd VM/
+   81  vagrant init 
+   82  sudo vagrant init 
+   83  ls
+   84  pwd
+   85  ls
+   86  vagrant up
+   87  sudo vagrat up
+   88  sudo vagrant up
+   89  sudo vagrant ssh
+   90  cd 
+   91  ls
+   92  sudo rm -r Vagrant/
+   93  ls
+   94  mkdir -p ~/Vagrant/VM1
+   95  cd Vagrant/VM1/
+   96  ls
+   97  pwd
+   98  ls
+   99  vagrant init
+  100  vagrant up
+  101  vagrant ssh
+  102  vagrant up
+  103  vagrant ssh
+  104  cd ..
+  105  rm -r Vagrant/
+  106  ls
+  107  mkdir -p ~/Vagrant/VM1
+  108  cd Vagrant/VM1/
+  109  ls
+  110  vagrant init ubuntu/xenial164
+  111  vagrant up
+  112  vagrant destroy
+  113  vagrant up
+  114  vagrant init ubuntu/xenial64
+  115  ls
+  116  rm Vagrantfile 
+  117  ls
+  118  vagrant init ubuntu/xenial64
+  119  vagrant up
+  120  vagrant ssh
+  121  vagrant up
+  122  vagrant ssh
+  123  vagrant provision
+  124  vagrant ssh
+  125  vagrant status
+  126  vagrant halt
+  127  vagrant status
+  128  cd 
+  129  ls
+  130  cd VirtualBox\ VMs/
+  131  ls
+  132  rm -r VM1_default_15562_48519
+  133  sudo rm -r VM1_default_15562_48519
+  134  ls
+  135  cd ..
+  136  ls
+  137  history
+##################################################################################"
+
+  pour installer sonarqube
+  https://numeriquement.fr/tutoriels/tutoriel_sonarqube.php
+
+#########################################################################################
+  sprig boot
+  https://www.baeldung.com/spring-boot-war-tomcat-deploy
+  https://stormpath.com/blog/tutorial-spring-boot-war-files
+
+https://www.supinfo.com/articles/single/7610-deploiement-web-java-avec-spring-bootwildflydocker
+
+######################################################################
+yanlibert
+
+https://github.com/yanlibert
+https://github.com/yanlibert/pinotage
+
+
+###############################################################
+ps agux | grep ssh
+
+##############################################################"
+Installing the Control Machine
+https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html?highlight=apt
+Latest Releases via Apt (Ubuntu)
+
+Ubuntu builds are available in a PPA here.
+
+To configure the PPA on your machine and install ansible run these commands:
+
+$ sudo apt-get update
+$ sudo apt-get install software-properties-common
+$ sudo apt-add-repository --yes --update ppa:ansible/ansible
+$ sudo apt-get install ansible
+
+Build dans jenkins
+
+vagrant up
+vagrant ssh -c "sudo apt update" || vagrant ssh -c "sudo apt update" || vagrant ssh -c "sudo apt update" || vagrant ssh -c "sudo apt update" || vagrant ssh -c "sudo apt update" || vagrant ssh -c "sudo apt update"
+vagrant ssh -c "sudo dpkg --configure -a"
+vagrant ssh -c "sudo apt upgrade -y"
+vagrant ssh -c "sudo apt install -y docker.io"
+vagrant ssh -c "sudo docker build -t jenkins/webapp:1.0 ."
+vagrant ssh -c "sudo docker run -it -d -p 8096:8080 --rm --name application1 jenkins/webapp:1.0"
+#vagrant ssh -c "ip addr"
+#var7=`vagrant ssh -c 'ip -4 addr show dev enp0s8 | grep inet | tr -s " " | cut -d" " -f3 | head -n 1 | cut -d/ -f1'`
+
+projet à faire
+
+https://services.renater.fr/sourcesup/formation/chap04
+
+https://services.renater.fr/sourcesup/nexus
+
+https://blog.codecentric.de/en/2015/10/continuous-integration-platform-using-docker-container-jenkins-sonarqube-nexus-gitlab/
+
+template beamer pour le projet
+https://fr.overleaf.com/latex/templates/presentation-template-au-theme/ffhvmnbyvdjg
+
+https://blog.ippon.fr/2017/06/09/les-architectures-serverless/
