@@ -1,0 +1,147 @@
+ARG DOCKER_USE_PLUGIN_IN_FILE='true'
+ARG USE_CONNECTION
+
+FROM jenkins/jenkins:latest AS base
+# FROM jenkins/jenkins:lts
+
+
+FROM base AS version-proxy
+# use proxy AWS
+ENV https_proxy=http://proxytech.swisslife.aws:3128
+ENV http_proxy=http://proxytech.swisslife.aws:3128
+ENV use_proxy=true
+ENV JAVA_PROXY_ARG="-Dhttps.proxyHost=proxytech.swisslife.aws -Dhttps.proxyPort=3128"
+
+FROM base AS version-direct
+ENV use_proxy=false
+
+FROM version-${USE_CONNECTION} AS final
+
+RUN echo "use_proxy ${use_proxy}"
+RUN echo "https_proxy : ${https_proxy}"
+
+USER root
+
+# ajout les certificat SWL
+RUN mkdir /usr/share/ca-certificates/swl
+ADD image/certificat/ /usr/share/ca-certificates/swl/
+RUN echo "swl/swisslifeissueCA.crt" >> /etc/ca-certificates.conf
+RUN echo "swl/swissliferoot.crt" >> /etc/ca-certificates.conf
+RUN update-ca-certificates --verbose
+RUN dpkg-reconfigure ca-certificates -fnoninteractive
+
+RUN ls /etc/ssl/certs
+
+# install pkg : ansible, locales and python
+RUN sed -i 's/http:\/\//https:\/\//g' /etc/apt/sources.list
+RUN cat /etc/apt/sources.list
+RUN apt update
+RUN apt -y upgrade
+RUN apt install -y ansible locales python awscli python3 python3-pip python3-venv virtualenv python3-setuptools rsync cron
+RUN apt clean
+
+# configure locale FR
+RUN sed -i 's/^# *\(fr_FR.UTF-8\)/\1/' /etc/locale.gen
+RUN locale-gen
+RUN rm /etc/localtime
+RUN ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
+
+
+
+# configure SWL PKI
+COPY image/certificat /tmp/certificat
+
+# SHOW JVM
+RUN echo $JAVA_HOME
+RUN java -version
+RUN ls -la /tmp/certificat
+
+RUN $JAVA_HOME/bin/keytool -importcert -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -alias swl_root -noprompt -file /tmp/certificat/swissliferoot.crt
+RUN $JAVA_HOME/bin/keytool -importcert -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -alias swl_inter -noprompt -file /tmp/certificat/swisslifeissueCA.crt
+
+
+# crée le répertoire qui servira de point de montage pour le backups
+# TODO : a supprimer quand le point de montage EFS sera supprimé
+RUN mkdir -p /mnt/backup
+RUN chown jenkins:jenkins  /mnt/backup
+
+RUN mkdir -p /var/jenkins_backup
+RUN mkdir -p /var/jenkins_home/scriptler
+RUN chown jenkins:jenkins  /var/jenkins_backup
+RUN chown -R jenkins:jenkins  /var/jenkins_home
+
+
+# cree les répertoires pour que les volumes appartiennent a l'utilisateurs jenkins
+# COPY --chown=jenkins:jenkins  config/jobs/global/ /var/jenkins_home/jobs/
+# COPY --chown=jenkins:jenkins  image/users/ /var/jenkins_home/users/
+COPY --chown=jenkins:jenkins  image/plugins/ /var/jenkins_home/plugins/
+COPY --chown=jenkins:jenkins  image/casc_configs/ /var/jenkins_home/casc_configs/
+
+###########
+# TODO A SUPPRIMER MIS POUR LES TESTS
+# COPY --chown=jenkins:jenkins config /tmp/updateDir/default/
+# RUN chown -R jenkins:jenkins /tmp/updateDir
+###########
+
+RUN find /. -name "jenkins-plugin-cli"
+
+# directory workspace
+RUN mkdir /var/jenkins_workspace
+RUN chown jenkins:jenkins  /var/jenkins_workspace
+
+# donne les droits a user pour lancer le crontab
+RUN chmod u+s /usr/sbin/cron
+
+
+USER jenkins
+
+# creer crontab pour backup
+COPY --chown=jenkins:jenkins config/backup_jenkins.sh /var/jenkins_home/backup_jenkins.sh
+COPY --chown=jenkins:jenkins config/crontab.txt /tmp/crontab.txt
+RUN md5sum /var/jenkins_home/backup_jenkins.sh
+
+RUN crontab /tmp/crontab.txt
+
+# configure jenkins ENV
+ENV hudson.plugins.active_directory.ActiveDirectorySecurityRealm.forceLdaps=true
+ENV jdk.tls.trustNameService=true
+ENV com.sun.jndi.ldap.object.disableEndpointIdentification=true
+ENV LANG=fr_FR.UTF-8
+ENV JAVA_OPTS="-Dhudson.plugins.active_directory.ActiveDirectorySecurityRealm.forceLdaps=true -Djenkins.install.runSetupWizard=false -Djdk.tls.trustNameService=true -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true -Duser.timezone=Europe/Paris"
+
+# Install plugins
+# copy du fichier plugins.txt ou utilisation d'un fichier plugins.tar.gz s'il existe dans le répertoire config
+COPY --chown=jenkins:jenkins image/plugins.txt /usr/share/jenkins/ref/plugins.txt
+RUN echo "DOCKER_USE_PLUGIN_IN_FILE : ${DOCKER_USE_PLUGIN_IN_FILE}"
+#RUN jenkins-plugin-cli -f /usr/share/jenkins/ref/plugins.txt
+RUN java ${JAVA_PROXY_ARG} -jar /opt/jenkins-plugin-manager.jar -f /usr/share/jenkins/ref/plugins.txt
+
+# RUN if [[ "$USE_CONNECTION" == "proxy" ]] ; then \
+#     java -Dhttps.proxyHost=proxytech.swisslife.aws -Dhttps.proxyPort=3128 -jar /opt/jenkins-plugin-manager.jar -f /usr/share/jenkins/ref/plugins.txt; \
+#   else \
+#     jenkins-plugin-cli -f /usr/share/jenkins/ref/plugins.txt; \
+  # fi
+# Nettoyage du répertoire de plugins
+RUN rm -rf /var/jenkins_home/plugins/*.*
+
+
+## SCRIPT MAJ
+COPY --chown=jenkins:jenkins ./config/env_jenkins.sh /var/jenkins_home/env_jenkins.sh
+COPY --chown=jenkins:jenkins ./config/init_jenkins.sh /var/jenkins_home/init_jenkins.sh
+ADD  --chown=jenkins:jenkins ./config/scriptler/global/ /var/jenkins_home/scriptler/
+RUN ls -la /var/jenkins_home/scriptler/
+RUN ls -la /var/jenkins_home/scriptler/scripts
+
+COPY --chown=jenkins:jenkins image/update_jenkins /var/jenkins_home/
+RUN chmod u+x /var/jenkins_home/init_jenkins.sh
+
+USER root
+
+# unset the proxy
+ENV https_proxy=
+ENV http_proxy=
+ENV JAVA_PROXY_ARG=
+
+USER jenkins
+
+ENTRYPOINT ["/bin/bash","/var/jenkins_home/init_jenkins.sh"]
