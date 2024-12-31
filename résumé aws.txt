@@ -1,0 +1,219 @@
+EC2 (Elastic Compute Cloud) est un service proposé par Amazon Web Services (AWS) qui permet de louer des
+ serveurs virtuels dans le cloud. Avec EC2, les utilisateurs peuvent déployer et gérer des applications sur des instances (machines virtuelles) à la demande. 
+
+Voici quelques caractéristiques clés d'EC2 :
+
+1. Scalabilité: Vous pouvez facilement augmenter ou diminuer le nombre d'instances en fonction de vos besoins.
+2. Variété d'instances : EC2 propose différents types d'instances adaptées à divers cas d'utilisation, allant des applications légères
+ aux applications nécessitant beaucoup de ressources.
+3.Facturation à l'usage : Vous ne payez que pour ce que vous utilisez, ce qui peut réduire les coûts par rapport à l'achat de serveurs physiques.
+4. **Sécurité : AWS offre des outils pour sécuriser vos instances, comme des groupes de sécurité et des clés SSH.
+5. Intégration avec d'autres services AWS : EC2 fonctionne bien avec d'autres services AWS, ce qui permet de créer des 
+architectures complexes et évolutives.
+
+En somme, EC2 est une solution flexible et puissante pour héberger des applications dans le cloud.
+
+
+
+Pour créer un serveur (instance EC2) sur AWS, voici les étapes à suivre :
+
+ Étape 1 : Se connecter à AWS
+
+1.Créer un compte AWS: Si vous n'avez pas encore de compte, rendez-vous sur [aws.amazon.com](https://aws.amazon.com/) et inscrivez-vous.
+2.Se connecter à la console AWS : Allez sur la console de gestion AWS et connectez-vous avec vos identifiants.
+
+ Étape 2 : Accéder à EC2
+
+1. Dans la console AWS, recherchez "EC2" dans la barre de recherche ou cliquez sur "Services" et sélectionnez "EC2".
+
+Étape 3 : Lancer une instance
+
+1. Cliquez sur "Lancer des instances".
+2. Choisir une Amazon Machine Image (AMI) : Sélectionnez l'image du système d'exploitation que vous souhaitez utiliser (par exemple, Amazon Linux, Ubuntu, etc.).
+3. Choisir le type d'instance : Sélectionnez le type d'instance en fonction de vos besoins en ressources (CPU, RAM, etc.).
+4. Configurer l'instance:
+   - Définissez le nombre d'instances.
+   - Configurez les paramètres réseau (groupe de sécurité, VPC, etc.).
+5. Ajouter du stockage : Spécifiez la taille et le type du disque dur virtuel.
+6. Configurer le groupe de sécurité** : Créez ou sélectionnez un groupe de sécurité qui définit les règles de trafic entrant et sortant.
+7. Configurer les clés SSH: Créez une paire de clés (ou utilisez une existante) pour accéder à votre instance via SSH.
+
+ Étape 4 : Lancer l'instance
+
+1. Après avoir vérifié tous les paramètres, cliquez sur "Lancer l'instance".
+2. Vous verrez un message de confirmation avec un lien vers votre instance.
+
+Étape 5 : Accéder à votre instance
+
+1. Une fois l'instance en cours d'exécution, utilisez SSH pour vous connecter. Par exemple, dans un terminal, vous pouvez utiliser la commande suivante (remplacez `your-key.pem` et `ec2-user@your-instance-ip` par les valeurs appropriées) :
+   ```bash
+   ssh -i your-key.pem ec2-user@your-instance-ip
+   ```
+
+ Étape 6 : Gérer votre instance
+
+Une fois connecté, vous pouvez installer des logiciels, configurer votre environnement et déployer vos applications.
+
+ Étape 7 : Arrêter ou terminer l'instance
+Pour lier AWS avec GitHub, vous pouvez utiliser plusieurs approches, en fonction de vos besoins. Voici quelques méthodes courantes :
+
+ 1. **Déploiement continu avec AWS CodePipeline**
+
+AWS CodePipeline permet d'automatiser le déploiement de votre code depuis GitHub vers des services AWS comme EC2 ou Lambda.
+
+Étapes :
+
+1. Créer un référentiel GitHub** : Assurez-vous que votre code est dans un référentiel GitHub.
+
+2. Accéder à AWS CodePipeline** : Dans la console AWS, recherchez "CodePipeline" et créez un nouveau pipeline.
+
+3. Configurer le source stage** :
+   - Sélectionnez "GitHub" comme source.
+   - Authentifiez-vous avec GitHub pour donner accès à votre référentiel.
+   - Sélectionnez le référentiel et la branche que vous souhaitez utiliser.
+
+4.Configurer les étapes de construction et de déploiement** : Choisissez les services AWS que vous souhaitez utiliser pour construire et déployer votre application (par exemple, AWS CodeBuild pour la construction et AWS CodeDeploy pour le déploiement).
+
+5.Lancer le pipeline : Une fois configuré, CodePipeline surveillera votre référentiel GitHub pour les modifications et déclenchera des déploiements automatiques.
+
+2. **Utilisation d'AWS Lambda et GitHub Actions**
+
+Si vous utilisez des fonctions Lambda, vous pouvez également utiliser GitHub Actions pour déployer directement votre code.
+Étapes :
+
+1.Créer un fichier de workflow GitHub Actions :
+   - Dans votre référentiel, créez un dossier `.github/workflows` et un fichier YAML (par exemple, `deploy.yml`).
+
+2.Configurer le workflow** :
+   ```yaml
+   name: Deploy to AWS Lambda
+
+   on:
+     push:
+       branches:
+         - main  # Changez cela selon votre branche
+
+   jobs:
+     deploy:
+       runs-on: ubuntu-latest
+       steps:
+         - name: Checkout code
+           uses: actions/checkout@v2
+
+         - name: Set up AWS CLI
+           uses: aws-actions/configure-aws-credentials@v1
+           with:
+             aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+             aws-region: us-east-1  # Changez cela selon votre région
+
+         - name: Deploy to Lambda
+           run: |
+             aws lambda update-function-code --function-name your_lambda_function_name --zip-file fileb://your_code.zip
+   ```
+
+3. **Ajouter des secrets GitHub** :
+   - Allez dans les paramètres de votre référentiel, sous "Secrets" et ajoutez `AWS_ACCESS_KEY_ID` et `AWS_SECRET_ACCESS_KEY`.
+
+4. **Pousser votre code** : À chaque fois que vous poussez des modifications sur la branche spécifiée, GitHub Actions déclenchera le workflow et déploiera le code sur AWS Lambda.
+
+### 3. **Utilisation de AWS Amplify pour les applications front-end**
+
+Si vous déployez une application front-end (comme une application React), AWS Amplify peut être utilisé pour lier directement votre référentiel GitHub.
+
+**Étapes :**
+
+1. **Accéder à AWS Amplify** : Dans la console AWS, recherchez "Amplify".
+
+2. **Créer une nouvelle application** : Cliquez sur "Get started" sous "Deploy" et sélectionnez "GitHub" comme source.
+
+3. **Authentifiez-vous avec GitHub** : Donnez à Amplify accès à votre compte GitHub.
+
+4. **Choisir le référentiel et la branche** : Sélectionnez le référentiel et la branche que vous souhaitez déployer.
+
+5. **Configurer le build et le déploiement** : AWS Amplify générera automatiquement un fichier de configuration de build, que vous pouvez ajuster si nécessaire.
+
+6. **Lancer le déploiement** : Amplify construira et déploiera votre application automatiquement.
+
+ Conclusion
+
+Ces méthodes vous permettent de lier efficacement AWS et GitHub, que ce soit pour des déploiements automatisés ou des intégrations continues.
+ Choisissez celle qui convient le mieux à votre cas d'utilisation ! Si vous avez besoin d'aide sur une méthode spécifique, n'hésitez pas à demander.
+
+
+L'Auto Scaling d'AWS est un service qui permet d'ajuster automatiquement le nombre d'instances EC2 en fonction de la demande, ce qui aide à optimiser 
+les coûts et à garantir la disponibilité des applications. Voici un aperçu des concepts clés et des étapes pour configurer l'Auto Scaling :
+
+Concepts Clés
+Groupe de Mise à l'Échelle : C'est un ensemble d'instances EC2 qui partagent les mêmes configurations et politiques de mise à l'échelle.
+ Vous définissez le nombre minimum, maximum et souhaité d'instances.
+
+Politiques de Mise à l'Échelle : Ce sont des règles qui déclenchent l'ajout ou la suppression d'instances dans le groupe. 
+Elles peuvent être basées sur des métriques comme l'utilisation du CPU, la latence ou d'autres métriques personnalisées.
+
+Health Checks : AWS vérifie régulièrement l'état des instances. Si une instance échoue un health check, 
+elle peut être remplacée automatiquement.
+
+Étapes pour Configurer l'Auto Scaling
+Étape 1 : Créer une AMI (Optionnel)
+Si vous n'avez pas encore d'image de machine Amazon (AMI) personnalisée, vous pouvez en créer une à partir d'une instance EC2 existante.
+
+Étape 2 : Créer un Groupe de Mise à l'Échelle
+Accéder à la Console EC2 :
+
+Allez dans la console AWS, recherchez "EC2" et cliquez sur "Auto Scaling Groups" dans le menu de gauche.
+Créer un Groupe de Mise à l'Échelle :
+
+Cliquez sur "Create Auto Scaling group".
+Sélectionnez votre AMI et le type d'instance.
+Donnez un nom à votre groupe et configurez le nombre minimum, maximum et souhaité d'instances.
+Configurer le VPC et le Sous-réseau :
+
+Sélectionnez un VPC et les sous-réseaux dans lesquels vos instances seront lancées.
+Configurer les Options de Health Check :
+
+Choisissez entre les vérifications de santé EC2 ou Elastic Load Balancing (ELB), selon votre architecture.
+Étape 3 : Configurer les Politiques de Mise à l'Échelle
+Ajouter des Politiques de Mise à l'Échelle :
+
+Vous pouvez configurer des politiques basées sur des métriques comme l'utilisation du CPU. Par exemple, 
+vous pourriez ajouter une instance lorsque l'utilisation du CPU dépasse 70 % et en retirer une lorsque cela redescend sous 30 %.
+Configurer des Alarmes CloudWatch :
+
+Créez des alarmes CloudWatch pour déclencher vos politiques de mise à l'échelle. Par exemple,
+ vous pouvez créer une alarme pour surveiller l'utilisation du CPU.
+Étape 4 : Tester la Configuration
+Moniteur et Ajustement :
+Une fois que votre groupe de mise à l'échelle est configuré, surveillez son comportement via la console CloudWatch.
+ Ajustez les seuils et les politiques si nécessaire.
+Conclusion
+L'Auto Scaling est un outil puissant pour garantir que vos applications sont à la fois disponibles et rentables.
+ En configurant correctement vos groupes de mise à l'échelle et vos politiques, vous pouvez gérer la charge variable de manière efficace.
+
+Si vous avez besoin de plus de détails sur une étape spécifique ou des conseils supplémentaires, n'hésitez pas à demander !
+
+
+Sevice delivery
+
+- Management équipes
+- Suivi et coordination MEP - interventions en production
+- Pilotage du traitement des incidents/demandes
+- Reporting activité / Capacity planning
+- Animation des points périodiques de restitution
+- Suivi des KPI
+- Amélioration continue : analyse des indicateurs clés et proposition de plans d'action associés
+
+Analyste applications
+
+- Activité d'administration d'applications 
+- Reprise et amélioration des conditions d’exploitation 
+- Coordination d'activités techniques 
+- Documentation technique
+SQL, Informatica, Orcale Database
+VTOM
+Linux
+F3N(Vg!c
+F3N(Vg!c
+F3N(Vg!c
+
+ssh cloud_user@52.91.21.242
